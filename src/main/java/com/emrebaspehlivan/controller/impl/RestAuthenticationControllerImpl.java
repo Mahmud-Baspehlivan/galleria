@@ -1,0 +1,29 @@
+package com.emrebaspehlivan.controller.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.emrebaspehlivan.controller.IRestAuthenticationController;
+import com.emrebaspehlivan.controller.RestBaseController;
+import com.emrebaspehlivan.controller.RootEntity;
+import com.emrebaspehlivan.dto.AuthRequest;
+import com.emrebaspehlivan.dto.DtoUser;
+import com.emrebaspehlivan.service.IAuthenticationService;
+
+import jakarta.validation.Valid;
+
+@RestController
+public class RestAuthenticationControllerImpl extends RestBaseController implements IRestAuthenticationController {
+
+	@Autowired
+	private IAuthenticationService authenticationService;
+
+	@PostMapping("/register")
+	@Override
+	public RootEntity<DtoUser> register(@Valid @RequestBody AuthRequest input) {
+		return ok(authenticationService.register(input));
+	}
+
+}
