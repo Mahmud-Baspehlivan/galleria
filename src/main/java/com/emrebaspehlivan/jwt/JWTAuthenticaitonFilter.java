@@ -1,7 +1,6 @@
 package com.emrebaspehlivan.jwt;
 
 import java.io.IOException;
-import java.rmi.server.ExportException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -61,6 +60,7 @@ public class JWTAuthenticaitonFilter extends OncePerRequestFilter {
 		} catch (Exception e) {
 			throw new BaseException(new ErrorMessage(MessageType.GENERAL_EXCEPTION, e.getMessage()));
 		}
+		filterChain.doFilter(request, response);
 
 	}
 
