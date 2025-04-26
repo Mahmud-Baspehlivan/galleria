@@ -1,16 +1,27 @@
 package com.emrebaspehlivan.service.impl;
 
 import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.emrebaspehlivan.dto.AuthRequest;
+import com.emrebaspehlivan.dto.AuthResponse;
 import com.emrebaspehlivan.dto.DtoUser;
+import com.emrebaspehlivan.exception.BaseException;
+import com.emrebaspehlivan.exception.ErrorMessage;
+import com.emrebaspehlivan.exception.MessageType;
+import com.emrebaspehlivan.jwt.JWTService;
+import com.emrebaspehlivan.model.RefreshToken;
 import com.emrebaspehlivan.model.User;
 import com.emrebaspehlivan.repository.IUserRepository;
+import com.emrebaspehlivan.repository.RefreshTokenRepository;
 import com.emrebaspehlivan.service.IAuthenticationService;
 
 @Service
@@ -19,14 +30,34 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	@Autowired
 	private IUserRepository iUserRepository;
 
+	@Autowired
 	private BCryptPasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private AuthenticationProvider authenticationProvider;
+	
+	@Autowired
+	private JWTService jwtService;
+	
+	@Autowired
+	private RefreshTokenRepository refreshTokenRepository;
 
 	private User createUser(AuthRequest input) {
 		User user = new User();
 		user.setCreateTime(new Date());
+		user.setUsername(input.getUsername());
 		user.setPassword(passwordEncoder.encode(input.getPassword()));
 
 		return user;
+	}
+	
+	private RefreshToken createRefreshToken(User user) {
+		RefreshToken refreshToken = new RefreshToken();
+		refreshToken.setCreateTime(new Date());
+		refreshToken.setExpriredDate(new Date(System.currentTimeMillis() + 1000*60*60*4));
+		refreshToken.setRefreshToken(UUID.randomUUID().toString());
+		refreshToken.setUser(user);
+		return refreshToken;
 	}
 
 	@Override
@@ -37,7 +68,25 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 		User savedUser = iUserRepository.save(createUser(input));
 
 		BeanUtils.copyProperties(savedUser, dtoUser);
-		return null;
+		return dtoUser;
+	}
+
+	@Override
+	public AuthResponse authenticate(AuthRequest input) {
+		try {
+			UsernamePasswordAuthenticationToken authenticationToken = 
+					new UsernamePasswordAuthenticationToken(input.getUsername(), input.getPassword());
+			authenticationProvider.authenticate(authenticationToken);
+			
+			Optional<User> optUser = iUserRepository.findByUsername(input.getUsername());
+			
+			String accessToken = jwtService.generateToken(optUser.get());
+			RefreshToken savedRefreshToken = refreshTokenRepository.save(createRefreshToken(optUser.get()));
+			
+			return new AuthResponse(accessToken, savedRefreshToken.getRefreshToken());
+		} catch (Exception e) {
+			throw new BaseException(new ErrorMessage(MessageType.USERNAME_OR_PASSWORD_INVALID, e.getMessage()));
+		}
 	}
 
 }

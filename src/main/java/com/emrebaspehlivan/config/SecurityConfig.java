@@ -10,33 +10,38 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.emrebaspehlivan.handler.AuthEntryPoint;
 import com.emrebaspehlivan.jwt.JWTAuthenticaitonFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
-	public static final String REGISTER = "/register"; 
-	public static final String AUTHENTICATION = "/authentication"; 
-	public static final String REFRESH_TOKEN= "/refreshToken"; 
-	
+	public static final String REGISTER = "/register";
+	public static final String AUTHENTICATION = "/authenticate";
+	public static final String REFRESH_TOKEN = "/refreshToken";
+
 	@Autowired
 	private AuthenticationProvider authenticationProvider;
-	
+
 	@Autowired
 	private JWTAuthenticaitonFilter jwtAuthenticaitonFilter;
+
+	@Autowired
+	private AuthEntryPoint authEntryPoint;
+	
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		
+
 		http.csrf().disable()
-		.authorizeHttpRequests(request->
-		request.requestMatchers(REGISTER, AUTHENTICATION, REFRESH_TOKEN).permitAll()
-		.anyRequest()
-		.authenticated())
-		.sessionManagement(session-> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-		.authenticationProvider(authenticationProvider)
-		.addFilterBefore(jwtAuthenticaitonFilter, UsernamePasswordAuthenticationFilter.class);
-		
+				.authorizeHttpRequests(request -> request.requestMatchers(REGISTER, AUTHENTICATION, REFRESH_TOKEN)
+						.permitAll().anyRequest().authenticated())
+				.exceptionHandling().authenticationEntryPoint(authEntryPoint).and()
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.authenticationProvider(authenticationProvider)
+				.addFilterBefore(jwtAuthenticaitonFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
+
 }

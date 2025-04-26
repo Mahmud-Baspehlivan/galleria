@@ -8,6 +8,7 @@ public enum MessageType {
 	NO_RECORD_EXIST("1001","kayıt bulunamadı"),
 	TOKEN_IS_EXPIRED("1002","tokenın süresi bitmiştir"),
 	USERNAME_NOT_FOUND("1003","username bulunumadı"),
+	USERNAME_OR_PASSWORD_INVALID("1004", "kullanıcı adı yada şifre hatalı"),
 	GENERAL_EXCEPTION("9999" , "genel bir hata oluştu");
 	
 	private String code;
