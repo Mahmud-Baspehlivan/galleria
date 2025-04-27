@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.emrebaspehlivan.dto.DtoAddress;
 import com.emrebaspehlivan.dto.DtoAddressIU;
+import com.emrebaspehlivan.exception.BaseException;
+import com.emrebaspehlivan.exception.ErrorMessage;
+import com.emrebaspehlivan.exception.MessageType;
 import com.emrebaspehlivan.model.Address;
 import com.emrebaspehlivan.repository.AddressRepository;
 import com.emrebaspehlivan.service.IAddressService;
@@ -45,7 +48,7 @@ public class AddressServiceImpl implements IAddressService {
         DtoAddress dtoAddress = new DtoAddress();
 
         Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString())));
 
         BeanUtils.copyProperties(dtoAddressIU, address);
 
