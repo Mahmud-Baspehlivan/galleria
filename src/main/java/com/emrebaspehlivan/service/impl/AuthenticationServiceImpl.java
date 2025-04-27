@@ -55,7 +55,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 	private RefreshToken createRefreshToken(User user) {
 		RefreshToken refreshToken = new RefreshToken();
 		refreshToken.setCreateTime(new Date());
-		refreshToken.setExpriredDate(new Date(System.currentTimeMillis() + 1000*60*60*4));
+		refreshToken.setExpriredDate(new Date(System.currentTimeMillis() + 1000*60*60*24));
 		refreshToken.setRefreshToken(UUID.randomUUID().toString());
 		refreshToken.setUser(user);
 		return refreshToken;

@@ -39,22 +39,34 @@ public class AddressServiceImpl implements IAddressService {
     }
 
     @Override
-    public void deleteAddress(Long id) {
+    public DtoAddress deleteAddress(Long id) {
+        if (id == null) {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Null ID provided"));
+        }
+
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString())));
+
+        DtoAddress dtoAddress = new DtoAddress();
+        BeanUtils.copyProperties(address, dtoAddress);
+
         addressRepository.deleteById(id);
+
+        return dtoAddress;
     }
 
     @Override
     public DtoAddress updateAddress(Long id, DtoAddressIU dtoAddressIU) {
         DtoAddress dtoAddress = new DtoAddress();
 
-        Address address = addressRepository.findById(id)
-                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString())));
-
-        BeanUtils.copyProperties(dtoAddressIU, address);
-
-        Address updatedAddress = addressRepository.save(address);
-        BeanUtils.copyProperties(updatedAddress, dtoAddress);
-
+        Address address = addressRepository.findById(id).orElse(null);
+        if (address != null) {
+            BeanUtils.copyProperties(dtoAddressIU, address);
+            Address updatedAddress = addressRepository.save(address);
+            BeanUtils.copyProperties(updatedAddress, dtoAddress);
+        } else {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
+        }
         return dtoAddress;
     }
 }

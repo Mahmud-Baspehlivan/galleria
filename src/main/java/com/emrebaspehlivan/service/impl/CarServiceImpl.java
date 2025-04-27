@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.emrebaspehlivan.dto.DtoCar;
 import com.emrebaspehlivan.dto.DtoCarIU;
+import com.emrebaspehlivan.exception.BaseException;
+import com.emrebaspehlivan.exception.ErrorMessage;
+import com.emrebaspehlivan.exception.MessageType;
 import com.emrebaspehlivan.model.Car;
 import com.emrebaspehlivan.repository.CarRepository;
 import com.emrebaspehlivan.service.ICarService;
@@ -38,12 +41,18 @@ public class CarServiceImpl implements ICarService {
 
     @Override
     public DtoCar deleteCar(Long id) {
-        carRepository.deleteById(id);
-        DtoCar dtoCar = new DtoCar();
-        Car car = carRepository.findById(id).orElse(null);
-        if (car != null) {
-            BeanUtils.copyProperties(car, dtoCar);
+        if (id == null) {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, "Null ID provided"));
         }
+
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString())));
+
+        DtoCar dtoCar = new DtoCar();
+        BeanUtils.copyProperties(car, dtoCar);
+
+        carRepository.deleteById(id);
+
         return dtoCar;
     }
 
@@ -55,6 +64,8 @@ public class CarServiceImpl implements ICarService {
             BeanUtils.copyProperties(dtoCarIU, car);
             Car updatedCar = carRepository.save(car);
             BeanUtils.copyProperties(updatedCar, dtoCar);
+        } else {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
         }
         return dtoCar;
     }

@@ -3,8 +3,8 @@ package com.emrebaspehlivan.dto;
 import lombok.Data;
 
 @Data
-public class DtoAddress extends DtoBase{
-	
+public class DtoAddress extends DtoBase {
+
 	private String city;
 
 	private String district;

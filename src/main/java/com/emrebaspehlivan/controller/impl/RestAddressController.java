@@ -2,6 +2,7 @@ package com.emrebaspehlivan.controller.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,14 +33,14 @@ public class RestAddressController extends RestBaseController implements IRestAd
 
 	@DeleteMapping("/delete/{id}")
 	@Override
-	public RootEntity<Boolean> deleteAddress(Long id) {
+	public RootEntity<Boolean> deleteAddress(@PathVariable Long id) {
 		addressService.deleteAddress(id);
 		return ok(true);
 	}
 
 	@PutMapping("/update/{id}")
 	@Override
-	public RootEntity<DtoAddress> updateAddress(Long id, @Valid @RequestBody DtoAddressIU dtoAddressIU) {
+	public RootEntity<DtoAddress> updateAddress(@PathVariable Long id, @Valid @RequestBody DtoAddressIU dtoAddressIU) {
 		return ok(addressService.updateAddress(id, dtoAddressIU));
 	}
 
