@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.emrebaspehlivan.dto.DtoAccount;
 import com.emrebaspehlivan.dto.DtoAccountIU;
+import com.emrebaspehlivan.exception.BaseException;
+import com.emrebaspehlivan.exception.ErrorMessage;
+import com.emrebaspehlivan.exception.MessageType;
 import com.emrebaspehlivan.model.Account;
 import com.emrebaspehlivan.repository.AccountRepository;
 import com.emrebaspehlivan.service.IAccountService;
@@ -47,7 +50,7 @@ public class AccountServiceImpl implements IAccountService {
 		DtoAccount dtoAccount = new DtoAccount();
 
 		Account account = accountRepository.findById(id)
-				.orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+				.orElseThrow(() -> new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString())));
 
 		BeanUtils.copyProperties(dtoAccountIU, account);
 

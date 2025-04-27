@@ -35,4 +35,23 @@ public class AddressServiceImpl implements IAddressService {
         return dtoAddress;
     }
 
+    @Override
+    public void deleteAddress(Long id) {
+        addressRepository.deleteById(id);
+    }
+
+    @Override
+    public DtoAddress updateAddress(Long id, DtoAddressIU dtoAddressIU) {
+        DtoAddress dtoAddress = new DtoAddress();
+
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Address not found with id: " + id));
+
+        BeanUtils.copyProperties(dtoAddressIU, address);
+
+        Address updatedAddress = addressRepository.save(address);
+        BeanUtils.copyProperties(updatedAddress, dtoAddress);
+
+        return dtoAddress;
+    }
 }
