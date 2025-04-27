@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,14 +33,15 @@ public class RestCustomerController extends RestBaseController implements IRestC
 
     @DeleteMapping("/delete/{id}")
     @Override
-    public RootEntity<Boolean> deleteCustomer(Long id) {
+    public RootEntity<Boolean> deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomer(id);
         return ok(true);
     }
 
     @PutMapping("/update/{id}")
     @Override
-    public RootEntity<DtoCustomer> updateCustomer(Long id, @Valid @RequestBody DtoCustomerIU dtoCustomerIU) {
+    public RootEntity<DtoCustomer> updateCustomer(@PathVariable Long id,
+            @Valid @RequestBody DtoCustomerIU dtoCustomerIU) {
         return ok(customerService.updateCustomer(id, dtoCustomerIU));
     }
 
