@@ -1,5 +1,13 @@
 package com.emrebaspehlivan.dto;
 
-public class DtoSaledCar extends DtoBase{
+import lombok.Data;
 
+@Data
+public class DtoSaledCar extends DtoBase {
+
+    private DtoCustomer customer;
+
+    private DtoCar car;
+
+    private DtoGallerist gallerist;
 }
