@@ -51,7 +51,7 @@ public class SaledCarServiceImpl implements ISaledCarService {
     public BigDecimal convertCustomerAmountToUSD(Customer customer) {
 
         CurrencyRatesResponse currencyRatesResponse = currencyRatesService
-                .getCurrencyRates(DateUtils.getCurrentcyDate(new Date()), DateUtils.getCurrentcyDate(new Date()));
+                .getCurrencyRates("28-04-2025", "28-04-2025");
         BigDecimal usd = new BigDecimal(currencyRatesResponse.getItems().get(0).getUsd());
 
         BigDecimal customerUSDAmount = customer.getAccount().getAmount().divide(usd, 2, RoundingMode.HALF_UP);
@@ -72,7 +72,7 @@ public class SaledCarServiceImpl implements ISaledCarService {
         BigDecimal remaningCustomerUSDAmount = customerUSDAmount.subtract(car.getPrice());
 
         CurrencyRatesResponse currencyRatesResponse = currencyRatesService
-                .getCurrencyRates(DateUtils.getCurrentcyDate(new Date()), DateUtils.getCurrentcyDate(new Date()));
+                .getCurrencyRates("28-04-2025", "28-04-2025");
         BigDecimal usd = new BigDecimal(currencyRatesResponse.getItems().get(0).getUsd());
         // 2000 - 34.15
 
