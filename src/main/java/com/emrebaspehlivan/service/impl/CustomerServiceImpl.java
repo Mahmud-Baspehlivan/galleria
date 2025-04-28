@@ -85,8 +85,9 @@ public class CustomerServiceImpl implements ICustomerService {
             DtoCustomer dtoCustomer = new DtoCustomer();
             BeanUtils.copyProperties(optCustomer.get(), dtoCustomer);
             return dtoCustomer;
+        } else {
+            throw new BaseException(new ErrorMessage(MessageType.NO_RECORD_EXIST, id.toString()));
         }
-        return null;
     }
 
     @Override
